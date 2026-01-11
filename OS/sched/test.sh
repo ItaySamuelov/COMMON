@@ -2,11 +2,9 @@
 make clean
 make
 for i in {1..3}; do
-  ./ex1 > out.txt
   echo -e "\n"
   echo "run number $((i))"
-  cat out.txt
-  cat out.txt | grep "exit"
+  ./ex1
 done
 rm -f out.txt
 
