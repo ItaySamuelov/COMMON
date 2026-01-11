@@ -2,7 +2,7 @@
 CXX      := g++
 CXXFLAGS := -O2 -std=c++17 -Wall -Wextra -pedantic
 TARGET   := ex2
-SRC      := "$TARGET".cpp
+SRC      := $(TARGET).cpp
 
 .PHONY: all run clean
 
