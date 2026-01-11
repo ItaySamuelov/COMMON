@@ -1,8 +1,8 @@
 # Makefile
 CXX      := g++
 CXXFLAGS := -O2 -std=c++17 -Wall -Wextra -pedantic
-TARGET   := sched_demo
-SRC      := sched_demo.cpp
+TARGET   := ex1
+SRC      := ex1.cpp
 
 .PHONY: all run clean
 
