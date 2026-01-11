@@ -27,3 +27,7 @@ for i in {1..3} ; do
   make
   ./ex1
 done
+
+sed -i "s/${!NEXT}/$OPT0/g" "$FILE" #restore to default
+make clean
+make
