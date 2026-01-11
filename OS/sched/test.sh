@@ -21,9 +21,9 @@ OPT3="const int nice_vals[3] = {0, 15, 19};"
 for i in {1..3} ; do
   echo -e "\n"
   echo "option $((i))"
-  PREV = OPT$((i-1))
-  NEXT = OPT$i
-  's/${PREV}/${NEXT}/g' "$FILE"
+  PREV=OPT${i-1}
+  NEXT=OPT$i
+  sed -i 's/${PREV}/${NEXT}/g' "$FILE"
   make clean
   make
   ./ex1
