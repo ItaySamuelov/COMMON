@@ -21,7 +21,6 @@ for i in {1..3} ; do
   echo "option $((i))"
   PREV="OPT$(($i-1))"
   NEXT="OPT$i"
-
   sed -i "s/${!PREV}/${!NEXT}/g" "$FILE"
   make clean
   make
