@@ -35,11 +35,7 @@ static void child_main(int child_id) {
     // Parent will SIGCONT us, but we can also self-stop once at start.
     raise(SIGSTOP);
 
-    // TODO (YOU): Decide how a child knows when to exit.
-    // Options:
-    // 1) Run for a fixed number of chunks (e.g., 50 chunks).
-    // 2) Run until parent sends SIGTERM (then handle it).
-    // 3) Run until a time limit (measure with clock).
+
 
     const int CHUNKS_TO_RUN = 25; // You can change this.
     for (int k = 0; k < CHUNKS_TO_RUN; ++k) {
