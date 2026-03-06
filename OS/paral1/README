@@ -1,0 +1,29 @@
+Reader-Writers Exercise
+=======================
+
+Implement the synchronization logic of the ReaderWriters class in rw.cpp.
+
+Files:
+- rw.h       : class declaration
+- rw.cpp     : implementation (incomplete)
+- main.cpp   : test program
+- Makefile   : build instructions
+
+Requirements:
+1. Multiple readers may access the shared resource simultaneously.
+2. Writers must have exclusive access.
+3. No reader may access the resource while a writer is active.
+4. No two writers may access the resource at the same time.
+5. Use std::mutex and std::condition_variable.
+6. The synchronization logic must be implemented by the solver.
+
+Notes:
+- You may choose reader-preference, writer-preference, or fair policy,
+  unless your instructor specifies otherwise.
+- The logging output should help verify that the implementation is correct.
+
+Build:
+    make
+
+Run:
+    ./rw_test
