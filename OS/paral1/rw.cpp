@@ -28,6 +28,7 @@ void ReaderWriters::startRead(int readerId) {
 void ReaderWriters::endRead(int readerId) {
     mtx.lock();
     activeReaders--;
+    peintf("hi %d\n", readerId); // DEBUG
     printMtx.lock();
     std::cout << "Reader " << readerId << " exited" << std::endl;
     printMtx.unlock();
