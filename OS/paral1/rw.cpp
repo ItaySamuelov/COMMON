@@ -13,7 +13,7 @@ ReaderWriters::ReaderWriters(): // trivial constructor
 void ReaderWriters::startRead(int readerId) {
     mtx.lock();
     waitingReaders++;
-    mtx.unlock()
+    mtx.unlock();
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
         std::unique_lock<std::mutex> lock(mtx);
         cvr.wait(lock);
