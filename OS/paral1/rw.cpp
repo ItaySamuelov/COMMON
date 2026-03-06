@@ -50,7 +50,7 @@ void ReaderWriters::startWrite(int writerId) {
     waitingWriters++;
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
         std::unique_lock<std::mutex> lock(mtx);
-        cvr.wait(lock);
+        cvw.wait(lock);
     }
     waitingWriters--;
     activeWriters++;
