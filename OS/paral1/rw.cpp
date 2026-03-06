@@ -18,9 +18,9 @@ void ReaderWriters::startRead(int readerId) {
     }
     waitingReaders--;
     activeReaders++;
-    printMtx.lock()
+    printMtx.lock();
     cout << "Reader " << readerId << " entered" << endl;
-    printMtx.unlock()
+    printMtx.unlock();
     mtx.unlock();
 }
 
