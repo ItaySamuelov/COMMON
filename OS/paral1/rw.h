@@ -36,7 +36,8 @@ private:
     int waitingWriters;
 
     std::mutex mtx;
-    std::condition_variable cv;
+    std::condition_variable cvr; // condition variables for readers
+    std::condition_variable cvw; // condition variables for writers
 
     // Used only to avoid interleaved prints
     std::mutex printMtx;

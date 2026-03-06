@@ -15,7 +15,7 @@ void ReaderWriters::startRead(int readerId) {
     waitingReaders++;
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
         std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock);
+        cvr.wait(lock);
     }
     waitingReaders--;
     activeReaders++;
@@ -31,8 +31,13 @@ void ReaderWriters::endRead(int readerId) {
     printMtx.lock();
     std::cout << "Reader " << readerId << " exited" << std::endl;
     printMtx.unlock();
-    if (activeReaders == 0){
-      cv.notify_one();// wake a single writer
+    if (!activeReaders){
+        if (waitingWriters){
+            cvw.notify_one(); // wake a ONE writer
+        }
+        else{
+            cvr.notify_all(); // wake up ALL readers
+        }
     }
     mtx.unlock();
 }
@@ -42,7 +47,7 @@ void ReaderWriters::startWrite(int writerId) {
     waitingWriters++;
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
         std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock);
+        cvr.wait(lock);
     }
     waitingWriters--;
     activeWriters++;
@@ -60,10 +65,10 @@ void ReaderWriters::endWrite(int writerId) {
     printMtx.unlock();
     if (activeWriters){exit(1);} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
-        cv.notify_one(); //wake up ONE waiting writer
+        cvw.notify_one(); //wake up ONE waiting writer
     }
     else{
-        cv.notify_all(); // wake up ALL waiting readers
+        cvr.notify_all(); // wake up ALL waiting readers
     }
     printMtx.unlock();
 }
