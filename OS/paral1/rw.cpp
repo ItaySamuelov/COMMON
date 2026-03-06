@@ -31,7 +31,7 @@ void ReaderWriters::endRead(int readerId) {
     cout << "Reader " << readerId << " exited" << endl;
     printMtx.unlock();
     if (activeReaders == 0){
-      cv.signal();// wake a single writer
+      cv.notify_one()// wake a single writer
     }
     mtx.unlock();
 }
@@ -58,10 +58,10 @@ void ReaderWriters::endWrite(int writerId) {
     printMtx.unlock();
     if (activeWriters){exit(1)} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
-        cv.signal(&mtx) //wake up ONE waiting writer
+        cv.notify_one() //wake up ONE waiting writer
     }
     else{
-        cv.broadcast(&mtx); // wake up ALL waiting readers
+        cv.notify_all(); // wake up ALL waiting readers
     }
     printMtx.unlock();
 }
