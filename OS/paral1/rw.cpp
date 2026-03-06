@@ -53,7 +53,6 @@ void ReaderWriters::startWrite(int writerId) {
         cvw.wait(lock);
     }
     mtx.lock();
-    printf("start write %d\n", writerId); //DEBUG
     waitingWriters--;
     activeWriters++;
     printMtx.lock();
@@ -64,7 +63,6 @@ void ReaderWriters::startWrite(int writerId) {
 
 void ReaderWriters::endWrite(int writerId) {
     mtx.lock();
-    printf("end write %d\n", writerId); // DEBUG
     activeWriters--;
     printMtx.lock();
     std::cout << "Writer " << writerId << " exited" << std::endl;
