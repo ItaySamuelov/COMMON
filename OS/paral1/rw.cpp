@@ -44,7 +44,6 @@ void ReaderWriters::endRead(int readerId) {
 
 void ReaderWriters::startWrite(int writerId) {
     std::unique_lock<std::mutex> lock(mtx);
-    lock(mtx);
     waitingWriters++;
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
         cvw.wait(lock);
