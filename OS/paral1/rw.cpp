@@ -11,7 +11,7 @@ ReaderWriters::ReaderWriters(): // trivial constructor
       waitingWriters(0) {}
 
 void ReaderWriters::startRead(int readerId) {
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mtx);
     waitingReaders++;
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
         cvr.wait(lock);
@@ -25,7 +25,7 @@ void ReaderWriters::startRead(int readerId) {
 }
 
 void ReaderWriters::endRead(int readerId) {
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mtx);
     activeReaders--;
     printMtx.lock();
     std::cout << "Reader " << readerId << " exited" << std::endl;
@@ -43,11 +43,10 @@ void ReaderWriters::endRead(int readerId) {
 }
 
 void ReaderWriters::startWrite(int writerId) {
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mtx);
     lock(mtx);
     waitingWriters++;
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
-        std::unique_lock<std::mutex> lock(mtx);
         cvw.wait(lock);
     }
     mtx.lock();
@@ -60,7 +59,7 @@ void ReaderWriters::startWrite(int writerId) {
 }
 
 void ReaderWriters::endWrite(int writerId) {
-    std::unique_lock<std::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mtx);
     activeWriters--;
     printMtx.lock();
     std::cout << "Writer " << writerId << " exited" << std::endl;
