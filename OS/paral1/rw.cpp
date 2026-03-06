@@ -12,12 +12,13 @@ ReaderWriters::ReaderWriters(): // trivial constructor
 
 void ReaderWriters::startRead(int readerId) {
     mtx.lock();
-    printf("start read %d\n", readerId); //DEBUG
     waitingReaders++;
+    mtx.unlock()
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
         std::unique_lock<std::mutex> lock(mtx);
         cvr.wait(lock);
     }
+    mtx.lock();
     waitingReaders--;
     activeReaders++;
     printMtx.lock();
@@ -46,12 +47,14 @@ void ReaderWriters::endRead(int readerId) {
 
 void ReaderWriters::startWrite(int writerId) {
     mtx.lock();
-    printf("start write %d\n", writerId); //DEBUG
     waitingWriters++;
+    mtx.unlock();
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
         std::unique_lock<std::mutex> lock(mtx);
         cvw.wait(lock);
     }
+    mtx.lock();
+    printf("start write %d\n", writerId); //DEBUG
     waitingWriters--;
     activeWriters++;
     printMtx.lock();
