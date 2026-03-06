@@ -11,7 +11,6 @@ ReaderWriters::ReaderWriters(): // trivial constructor
       waitingWriters(0) {}
 
 void ReaderWriters::startRead(int readerId) {
-    printf("want to %d enter  \n", readerId);// DEBUG
     mtx.lock();
     waitingReaders++;
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
@@ -100,11 +99,9 @@ void ReaderWriters::writeValue(int writerId, int newValue) {
 
     sharedValue = newValue;
 
-    {
-        std::lock_guard<std::mutex> printLock(printMtx);
-        std::cout << "[Writer " << writerId << "] wrote value = "
-                  << newValue << std::endl;
-    }
+    printMtx.lock()
+    std::cout << "[Writer " << writerId << "] wrote value = " << newValue << std::endl;
+    printMtx.unlock();
 
     endWrite(writerId);
 }

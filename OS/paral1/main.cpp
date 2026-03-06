@@ -12,6 +12,7 @@ void readerTask(ReaderWriters& rw, int id, int rounds) {
 }
 
 void writerTask(ReaderWriters& rw, int id, int rounds) {
+    print("hi") // DEBUG
     for (int i = 0; i < rounds; ++i) {
         rw.writeValue(id, id * 100 + i);
         std::this_thread::sleep_for(std::chrono::milliseconds(90));
