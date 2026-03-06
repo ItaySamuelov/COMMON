@@ -11,29 +11,26 @@ ReaderWriters::ReaderWriters(): // trivial constructor
       waitingWriters(0) {}
 
 void ReaderWriters::startRead(int readerId) {
-    mtx.lock();
+    std::unique_lock<std::mutex> lock(mutex);
     waitingReaders++;
-    mtx.unlock();
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
-        std::unique_lock<std::mutex> lock(mtx);
         cvr.wait(lock);
     }
-    mtx.lock();
     waitingReaders--;
     activeReaders++;
     printMtx.lock();
     std::cout << "Reader " << readerId << " entered" << std::endl;
     printMtx.unlock();
-    mtx.unlock();
+    lock.unlock();
 }
 
 void ReaderWriters::endRead(int readerId) {
-    mtx.lock();
+    std::unique_lock<std::mutex> lock(mutex);
     activeReaders--;
     printMtx.lock();
     std::cout << "Reader " << readerId << " exited" << std::endl;
     printMtx.unlock();
-    mtx.unlock();
+
     if (!activeReaders){
         if (waitingWriters){
             cvw.notify_one(); // wake a ONE writer
@@ -42,12 +39,13 @@ void ReaderWriters::endRead(int readerId) {
             cvr.notify_all(); // wake up ALL readers
         }
     }
+    lock.unlock();
 }
 
 void ReaderWriters::startWrite(int writerId) {
-    mtx.lock();
+    std::unique_lock<std::mutex> lock(mutex);
+    lock(mtx);
     waitingWriters++;
-    mtx.unlock();
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
         std::unique_lock<std::mutex> lock(mtx);
         cvw.wait(lock);
@@ -58,16 +56,16 @@ void ReaderWriters::startWrite(int writerId) {
     printMtx.lock();
     std::cout << "Writer " << writerId << " entered" << std::endl;
     printMtx.unlock();
-    mtx.unlock();
+    lock.unlock();
 }
 
 void ReaderWriters::endWrite(int writerId) {
-    mtx.lock();
+    std::unique_lock<std::mutex> lock(mutex);
     activeWriters--;
     printMtx.lock();
     std::cout << "Writer " << writerId << " exited" << std::endl;
     printMtx.unlock();
-    mtx.unlock();
+
     if (activeWriters){exit(1);} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
         cvw.notify_one(); //wake up ONE waiting writer
@@ -75,6 +73,7 @@ void ReaderWriters::endWrite(int writerId) {
     else{
         cvr.notify_all(); // wake up ALL waiting readers
     }
+    lock.unlock();
 }
 
 int ReaderWriters::readValue(int readerId) {
