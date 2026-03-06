@@ -26,7 +26,7 @@ void ReaderWriters::startRead(int readerId) {
 }
 
 void ReaderWriters::endRead(int readerId) {
-    printf("hi");// DEBUG
+    printf("want to %d end  \n", readId);// DEBUG
     mtx.lock();
     activeReaders--;
     printMtx.lock();
