@@ -11,24 +11,9 @@ ReaderWriters::ReaderWriters(): // trivial constructor
       waitingWriters(0) {}
 
 void ReaderWriters::startRead(int readerId) {
-    // TODO:
-    // Implement the reader entry protocol.
-    //
-    // Requirements:
-    // 1. Multiple readers may read simultaneously.
-    // 2. A reader must not enter while a writer is writing.
-    // 3. Depending on the policy you choose, you may also block readers
-    //    when writers are waiting.
-    //
-    // Suggested steps:
-    // - lock the mutex
-    // - update waitingReaders if needed
-    // - wait on the condition variable until reading is allowed
-    // - update activeReaders / waitingReaders
-    // - print a message
     mtx.lock();
     waitingReaders++;
-    while (activeWriters){
+    while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
       cv.wait(&mtx)
     }
     waitingReaders--;
@@ -40,14 +25,6 @@ void ReaderWriters::startRead(int readerId) {
 }
 
 void ReaderWriters::endRead(int readerId) {
-    // TODO:
-    // Implement the reader exit protocol.
-    //
-    // Suggested steps:
-    // - lock the mutex
-    // - decrement activeReaders
-    // - print a message
-    // - notify waiting threads if appropriate
     mtx.lock();
     activeReaders--;
     printMtx.lock();
@@ -60,19 +37,6 @@ void ReaderWriters::endRead(int readerId) {
 }
 
 void ReaderWriters::startWrite(int writerId) {
-    // TODO:
-    // Implement the writer entry protocol.
-    //
-    // Requirements:
-    // 1. Only one writer may write at a time.
-    // 2. A writer must have exclusive access.
-    //
-    // Suggested steps:
-    // - lock the mutex
-    // - update waitingWriters if needed
-    // - wait on the condition variable until writing is allowed
-    // - update activeWriters / waitingWriters
-    // - print a message
     mtx.lock();
     waitingWriters++;
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
@@ -87,16 +51,19 @@ void ReaderWriters::startWrite(int writerId) {
 }
 
 void ReaderWriters::endWrite(int writerId) {
-    // TODO:
-    // Implement the writer exit protocol.
-    //
-    // Suggested steps:
-    // - lock the mutex
-    // - decrement activeWriters
-    // - print a message
-    // - notify waiting threads
-
-    (void)writerId;
+    mtx.lock();
+    activeWriters--;
+    printMtx.lock();
+    cout << "Writer " << writerId << " exited" << endl;
+    printMtx.unlock();
+    if (activeWriters){exit(1)} /// should never happen.
+    if (waitingWriters){ //waiting writers get priority over waiting readers
+        cv.signal(&mtx) //wake up ONE waiting writer
+    }
+    else{
+        cv.broadcast(&mtx); // wake up ALL waiting readers
+    }
+    printMtx.unlock();
 }
 
 int ReaderWriters::readValue(int readerId) {
