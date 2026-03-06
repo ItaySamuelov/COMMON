@@ -26,6 +26,7 @@ void ReaderWriters::startRead(int readerId) {
 }
 
 void ReaderWriters::endRead(int readerId) {
+    printf("hi")// DEBUG
     mtx.lock();
     activeReaders--;
     printMtx.lock();
