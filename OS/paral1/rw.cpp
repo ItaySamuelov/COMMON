@@ -99,7 +99,7 @@ void ReaderWriters::writeValue(int writerId, int newValue) {
 
     sharedValue = newValue;
 
-    printMtx.lock()
+    printMtx.lock();
     std::cout << "[Writer " << writerId << "] wrote value = " << newValue << std::endl;
     printMtx.unlock();
 
