@@ -19,7 +19,7 @@ void ReaderWriters::startRead(int readerId) {
     waitingReaders--;
     activeReaders++;
     printMtx.lock();
-    cout << "Reader " << readerId << " entered" << endl;
+    std::cout << "Reader " << readerId << " entered" << std::endl;
     printMtx.unlock();
     mtx.unlock();
 }
@@ -28,7 +28,7 @@ void ReaderWriters::endRead(int readerId) {
     mtx.lock();
     activeReaders--;
     printMtx.lock();
-    cout << "Reader " << readerId << " exited" << endl;
+    std::cout << "Reader " << readerId << " exited" << std::endl;
     printMtx.unlock();
     if (activeReaders == 0){
       cv.notify_one()// wake a single writer
@@ -45,7 +45,7 @@ void ReaderWriters::startWrite(int writerId) {
     waitingWriters--;
     activeWriters++;
     printMtx.lock();
-    cout << "Writer " << writerId << " entered" << endl;
+    std::cout << "Writer " << writerId << " entered" << std::endl;
     printMtx.unlock();
     mtx.unlock();
 }
@@ -54,7 +54,7 @@ void ReaderWriters::endWrite(int writerId) {
     mtx.lock();
     activeWriters--;
     printMtx.lock();
-    cout << "Writer " << writerId << " exited" << endl;
+    std::cout << "Writer " << writerId << " exited" << std::endl;
     printMtx.unlock();
     if (activeWriters){exit(1)} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
