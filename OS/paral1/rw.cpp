@@ -48,7 +48,6 @@ void ReaderWriters::startWrite(int writerId) {
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
         cvw.wait(lock);
     }
-    mtx.lock();
     waitingWriters--;
     activeWriters++;
     printMtx.lock();
