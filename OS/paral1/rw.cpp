@@ -15,7 +15,7 @@ void ReaderWriters::startRead(int readerId) {
     waitingReaders++;
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
         std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(locck)
+        cv.wait(lock)
     }
     waitingReaders--;
     activeReaders++;
