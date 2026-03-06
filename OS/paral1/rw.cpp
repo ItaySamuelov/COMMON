@@ -29,11 +29,11 @@ void ReaderWriters::startRead(int readerId) {
 
 void ReaderWriters::endRead(int readerId) {
     mtx.lock();
-    printf("end read %d\n", readerId); //DEBUG
     activeReaders--;
     printMtx.lock();
     std::cout << "Reader " << readerId << " exited" << std::endl;
     printMtx.unlock();
+    mtx.unlock();
     if (!activeReaders){
         if (waitingWriters){
             cvw.notify_one(); // wake a ONE writer
@@ -42,7 +42,6 @@ void ReaderWriters::endRead(int readerId) {
             cvr.notify_all(); // wake up ALL readers
         }
     }
-    mtx.unlock();
 }
 
 void ReaderWriters::startWrite(int writerId) {
@@ -70,6 +69,7 @@ void ReaderWriters::endWrite(int writerId) {
     printMtx.lock();
     std::cout << "Writer " << writerId << " exited" << std::endl;
     printMtx.unlock();
+    mtx.unlock();
     if (activeWriters){exit(1);} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
         cvw.notify_one(); //wake up ONE waiting writer
@@ -77,7 +77,6 @@ void ReaderWriters::endWrite(int writerId) {
     else{
         cvr.notify_all(); // wake up ALL waiting readers
     }
-    printMtx.unlock();
 }
 
 int ReaderWriters::readValue(int readerId) {
