@@ -11,6 +11,7 @@ ReaderWriters::ReaderWriters(): // trivial constructor
       waitingWriters(0) {}
 
 void ReaderWriters::startRead(int readerId) {
+    printf("want to %d enter  \n", readerId);// DEBUG
     mtx.lock();
     waitingReaders++;
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
@@ -26,7 +27,6 @@ void ReaderWriters::startRead(int readerId) {
 }
 
 void ReaderWriters::endRead(int readerId) {
-    printf("want to %d end  \n", readerId);// DEBUG
     mtx.lock();
     activeReaders--;
     printMtx.lock();
