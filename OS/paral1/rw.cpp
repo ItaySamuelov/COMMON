@@ -62,8 +62,6 @@ void ReaderWriters::endWrite(int writerId) {
     printMtx.lock();
     std::cout << "Writer " << writerId << " exited" << std::endl;
     printMtx.unlock();
-
-    if (activeWriters){exit(1);} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
         cvw.notify_one(); //wake up ONE waiting writer
     }
@@ -78,8 +76,9 @@ int ReaderWriters::readValue(int readerId) {
 
     // Simulate reading
     std::this_thread::sleep_for(std::chrono::milliseconds(80));
-
+    mtx.lock();
     int value = sharedValue;
+    mtx.unlock();
 
     {
         std::lock_guard<std::mutex> printLock(printMtx);
@@ -96,8 +95,9 @@ void ReaderWriters::writeValue(int writerId, int newValue) {
 
     // Simulate writing
     std::this_thread::sleep_for(std::chrono::milliseconds(120));
-
+    mtx.lock();
     sharedValue = newValue;
+    mtx.unlock();
 
     printMtx.lock();
     std::cout << "[Writer " << writerId << "] wrote value = " << newValue << std::endl;
