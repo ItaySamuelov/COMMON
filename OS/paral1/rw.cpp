@@ -14,7 +14,8 @@ void ReaderWriters::startRead(int readerId) {
     mtx.lock();
     waitingReaders++;
     while (activeWriters || waitingWriters){ // waiting writers get priority over waiting readers
-      cv.wait(&mtx)
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(locck)
     }
     waitingReaders--;
     activeReaders++;
@@ -40,7 +41,8 @@ void ReaderWriters::startWrite(int writerId) {
     mtx.lock();
     waitingWriters++;
     while(activeWriters || activeReaders){ // gets priority before waiting-readers!
-      cv.wait(&mtx);
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock);
     }
     waitingWriters--;
     activeWriters++;
@@ -58,7 +60,7 @@ void ReaderWriters::endWrite(int writerId) {
     printMtx.unlock();
     if (activeWriters){exit(1);} /// should never happen.
     if (waitingWriters){ //waiting writers get priority over waiting readers
-        cv.notify_one() //wake up ONE waiting writer
+        cv.notify_one(); //wake up ONE waiting writer
     }
     else{
         cv.notify_all(); // wake up ALL waiting readers
